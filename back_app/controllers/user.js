@@ -142,7 +142,8 @@ exports.findUserByEmail = (req, res, next) => {
             codeValidatorAdapter.addOne({
                 verificationType: 'email',
                 identifier: req.body.email,
-                code: code
+                code: code,
+                checked: false
             })
             .then(success => {
                 console.log('emailCode: ' + code);
@@ -173,4 +174,11 @@ exports.findUserByEmail = (req, res, next) => {
 
 exports.checkEmail = (req, res, next) => {
     // TODO
+
+    // Comparer le code avec ce qui est en base.
+
+    // SI ok : passer le champs checked a true + on dit au front que c'est ok
+    // sinon : on lui dit que le code est faux
+
+
 }

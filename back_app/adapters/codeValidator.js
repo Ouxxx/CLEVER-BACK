@@ -21,7 +21,7 @@ exports.addOne = data => {
     })   
 }
 
-/* recherche un user dans la table en fontion de l'objet 'data' */
+/* recherche un code dans la table en fontion de l'objet 'data' et le renvoie si trouvé */
 exports.findOne = data => {
     return new Promise( (resolve,reject) => {
         CodeValidator.findOne(data)
@@ -37,6 +37,15 @@ exports.findOne = data => {
         })
     })
     
+}
+
+exports.updateOne = data => {
+    return new Promise((resolve,reject) => {
+        CodeValidator.findOneAndUpdate(data)
+        .then(docCode => {
+            if()
+        })
+    })
 }
 
 exports.deleteOne = data => {

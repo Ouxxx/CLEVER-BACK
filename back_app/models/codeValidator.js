@@ -5,7 +5,7 @@ const codeValidatorSchema = mongoose.Schema({
     verificationType :{ type: String, required: true},
     identifier: { type: String, required: true, unique: true},
     code : { type: String, required: true},
-    checked : {type: String, required: true }
+    checked : {type: Boolean, required: true }
 });
 
 codeValidatorSchema.plugin(uniqueValidator);
