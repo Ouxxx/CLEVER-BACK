@@ -24,16 +24,18 @@ mongoose.connect('mongodb+srv://AdminApp:IQ5ygsXRUlm0a3mn@clusterv1-lkpz1.mongod
 
 app.use((req, res, next) => {
   console.log('----------------------------------------------------------');
-  console.log('Requête reçue !');
+  console.log('Requête reçue:');
+  console.log('method: '+ req.method);
+  console.log('url: ' + req.url);
+  console.log('body:');
+  console.log(req.body);
   next();
 });
 
 app.use('/api/user', userRoutes);
 app.use('/api/test', tokenAuth, testRoutes);
 
-app.use((req, res, next) => {
-  console.log('----------------------------------------------------------');
-});
+
 
 
 module.exports = app;

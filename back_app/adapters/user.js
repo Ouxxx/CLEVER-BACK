@@ -4,6 +4,8 @@ const User = require('../models/user')
 /* ajoute un user dans la table */
 exports.addOne = data => {
     return new Promise((resolve,reject) => {
+        console.log('on rentre dans ce then. data :')
+        console.log(data)
         const user = new User(data);
         user.save()
         .then(() => { 
@@ -13,6 +15,7 @@ exports.addOne = data => {
             })
         })
         .catch(error => { 
+            console.log('on rentre dans ce catch')
             reject({ 
                 state: 'ERROR',
                 error: error
@@ -20,6 +23,10 @@ exports.addOne = data => {
         })
     })   
 }
+
+
+
+
 
 exports.getOne = data => {
     console.log('Entre dans getOne ...')

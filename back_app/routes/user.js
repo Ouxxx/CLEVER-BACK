@@ -7,4 +7,7 @@ router.post('/form', userCtrl.saveForm);
 router.post('/signup', userCtrl.signup);
 router.post('/signin', userCtrl.signin);
 
+
+router.post('/search/email', userCtrl.findUserByEmail);
+
 module.exports = router;

@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 
 const userFormAdapter = require('../adapters/userform');
 const userAdapter = require('../adapters/user');
+const codeValidatorAdapter = require('../adapters/codeValidator')
 
 // genere une chaine de 'size' chiffres
 const generateCode = size => {
@@ -61,31 +62,40 @@ exports.signup = (req, res, next) => {
                 password: valid.user.password,
                 phone: valid.user.phone
             })
-            .then(
+            .then( (add_result) => {
                 // supprimer l'utilisateur de la table de transition
                 userFormAdapter.deleteOne(valid.user)
                 .then(() => res.status(201).json({
-                    state: 'SUCCESS', 
+                    state: 'SUCCESS',
+                    userId: userId,
                     message:'Utilisateur créé'
                 }))
                 .catch(error => 
                     // TODO:  Il faut faire qch pour relancer la suppression
                     res.status(201).json({
-                        state: 'SUCCESS', 
+                        state: 'SUCCESS',
+                        userId: userId,
                         message:'Utilisateur créé'
                 }))
-            )
-            .catch(error => res.status(400).json({ error }))
+            })
+            .catch(error => {
+                console.log('signup : catch lors de la sauvegarde du nouvel utilisateur dans la table definitive')
+                res.status(400).json({ error })
+            })
 
         } else {
             // Les codes sont pas bon
-            res.status(404).json({
+            console.log('on passe ici')
+            res.status(400).json({
                 state: 'ERROR', 
                 message: 'Les codes de verifications ne sont pas valides ...'
             })
         }
     })
-    .catch(error => res.status(400).json({ error }))
+    .catch(error => {
+        console.log('Erreur obtenue : ' + error)
+        res.status(400).json({ error })
+    })
 };
 
 
@@ -118,3 +128,49 @@ exports.signin = (req, res, next) => {
     })
     .catch(error => res.status(500).json({ error }))
 };
+
+
+// TODO checker que c'est pas une nieme tentative
+exports.findUserByEmail = (req, res, next) => {
+
+    // TODO verifier l'entré
+    userAdapter.getOne(req.body)
+    .then(result => {
+        if(result.user){
+            // generation du code et le stocker dans la table
+            const code = generateCode(10);
+            codeValidatorAdapter.addOne({
+                verificationType: 'email',
+                identifier: req.body.email,
+                code: code
+            })
+            .then(success => {
+                console.log('emailCode: ' + code);
+
+                // TODO envoyer un email chose qu on sait pas faire
+
+                // envoyer la reponse au front
+                res.status(200).json({
+                    isFound: true                
+                })
+            })
+            .catch(error => {
+                res.status(400).json({ error })
+            })
+        } else {
+            // mec t es un mito
+            res.status(200).json({
+                isFound: false                
+            })
+        }
+    })
+    .catch(error => {
+        console.log("findUserByEmail : ERROR -> Impossible de recuperer l'email à chercher")
+        console.log(error)
+        res.status(500).json({ error })
+    })
+}
+
+exports.checkEmail = (req, res, next) => {
+    // TODO
+}
