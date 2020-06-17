@@ -18,7 +18,8 @@ app.use((req, res, next) => {
 
 mongoose.connect('mongodb+srv://AdminApp:IQ5ygsXRUlm0a3mn@clusterv1-lkpz1.mongodb.net/test?retryWrites=true&w=majority',
   { useNewUrlParser: true,
-    useUnifiedTopology: true })
+    useUnifiedTopology: true, 
+    useFindAndModify: false })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 

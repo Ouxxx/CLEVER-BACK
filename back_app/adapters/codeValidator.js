@@ -4,9 +4,21 @@ const CodeValidator = require('../models/codeValidator')
 exports.addOne = data => {
     
     return new Promise((resolve,reject) => {
-        const codeForm = new CodeValidator(data);
-        codeForm.save()
-        .then(() => { 
+        console.log('email :' + data.identifier)
+        console.log('type :' + data.verificationType)
+
+        CodeValidator.findOneAndUpdate({
+            identifier: data.identifier
+        },{
+            verificationType : data.verificationType,
+            code : data.code,
+            checked: false
+        },{
+            new: true,
+            upsert: true // Make this update into an upsert
+        })
+        .then((res) => { 
+            console.log(res)
             resolve({ 
                 state: 'SUCCESS', 
                 message: 'Code en attente de verification'
@@ -39,14 +51,20 @@ exports.findOne = data => {
     
 }
 
-exports.updateOne = data => {
+
+exports.updateOne = (filter,data) => {
     return new Promise((resolve,reject) => {
-        CodeValidator.findOneAndUpdate(data)
-        .then(docCode => {
-            if()
-        })
+            CodeValidator.findOneAndUpdate(filter,data)
+            .then(res => {
+                console.log(res);
+                resolve({ state: 'SUCCESS', res: res });
+            })
+            .catch(error => {
+                reject( {state: 'ERROR', error: error })                
+            })
     })
 }
+
 
 exports.deleteOne = data => {
     return new Promise((resolve, reject) => {

@@ -142,8 +142,7 @@ exports.findUserByEmail = (req, res, next) => {
             codeValidatorAdapter.addOne({
                 verificationType: 'email',
                 identifier: req.body.email,
-                code: code,
-                checked: false
+                code: code
             })
             .then(success => {
                 console.log('emailCode: ' + code);
@@ -152,15 +151,18 @@ exports.findUserByEmail = (req, res, next) => {
 
                 // envoyer la reponse au front
                 res.status(200).json({
+                    state: 'SUCCESS',
                     isFound: true                
                 })
             })
             .catch(error => {
+                console.log(error)
                 res.status(400).json({ error })
             })
         } else {
-            // mec t es un mito
+            // utilisateur non trouve
             res.status(200).json({
+                state: 'SUCCESS',
                 isFound: false                
             })
         }
@@ -173,12 +175,64 @@ exports.findUserByEmail = (req, res, next) => {
 }
 
 exports.checkEmail = (req, res, next) => {
-    // TODO
+    codeValidatorAdapter.updateOne({
+        verificationType: 'email',
+        identifier: req.body.email,
+        code: req.body.code
+    },{
+        checked: true
+    })
+    .then(() => {
+        res.status(200).json({
+            state: 'SUCCESS'
+        })
+    })
+    .catch(error => {
+        console.log(error)
+        res.status(400).json({ error })
+    })
 
-    // Comparer le code avec ce qui est en base.
+}
 
-    // SI ok : passer le champs checked a true + on dit au front que c'est ok
-    // sinon : on lui dit que le code est faux
+// req : { body : { identifier, newPwd } }
+exports.changePwd = (req, res, next) => {
+    codeValidatorAdapter.findOne({
+        verificationType: 'email',
+        identifier: req.body.email
+    })
+    .then(found => {
+        // modifier pwd
+        if(found.doc){
+            // modification
+            userAdapter.updateOne({
+                verificationType: 'email',
+                identifier: req.body.email
+            },{
+                password: req.body.newPwd
+            })
 
+            // supprimer de la baqse codeValidator
+            codeValidatorAdapter.deleteOne({
+                verificationType: 'email',
+                identifier: req.body.email
+            })
+            .catch(() => {
+                //TODO: admin notification
+                console.log('WARNING : Echec lors de la suppression de l\'utilisateur dans la table codeValidator')
+            })
+            res.status(200).json({
+                state: 'SUCCESS'
+            })
+        } else {
+            // cas ou le mdp n'a pas ete trouve
+            res.status(200).json({
+                state: 'ERROR'
+            })
+        }
 
+    })
+    .catch(error => {
+        console.log(error)
+        res.status(400).json({ error })
+    })
 }
