@@ -4,9 +4,7 @@ const CodeValidator = require('../models/codeValidator')
 exports.addOne = data => {
     
     return new Promise((resolve,reject) => {
-        console.log('email :' + data.identifier)
-        console.log('type :' + data.verificationType)
-
+        
         CodeValidator.findOneAndUpdate({
             identifier: data.identifier
         },{
@@ -37,11 +35,11 @@ exports.addOne = data => {
 exports.findOne = data => {
     return new Promise( (resolve,reject) => {
         CodeValidator.findOne(data)
-        .then(code => {
-            if(!code) {
+        .then(doc => {
+            if(!doc) {
                 resolve({ state: 'SUCCESS'});
             } else {
-                resolve({ state: 'SUCCESS', code: code });
+                resolve({ state: 'SUCCESS', doc: doc });
             }
         })
         .catch(error => {
@@ -54,14 +52,14 @@ exports.findOne = data => {
 
 exports.updateOne = (filter,data) => {
     return new Promise((resolve,reject) => {
-            CodeValidator.findOneAndUpdate(filter,data)
-            .then(res => {
-                console.log(res);
-                resolve({ state: 'SUCCESS', res: res });
-            })
-            .catch(error => {
-                reject( {state: 'ERROR', error: error })                
-            })
+        CodeValidator.findOneAndUpdate(filter,data)
+        .then(res => {
+            console.log(res);
+            resolve({ state: 'SUCCESS', res: res });
+        })
+        .catch(error => {
+            reject( {state: 'ERROR', error: error })                
+        })
     })
 }
 
@@ -71,7 +69,7 @@ exports.deleteOne = data => {
         CodeValidator.deleteOne(data)
         .then(() => resolve({
             state: 'SUCCESS',
-            message: 'Utilisateur identifié !'
+            message: 'Utilisateur supprime !'
         }))
         .catch(error => {
             reject({

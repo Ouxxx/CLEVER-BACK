@@ -175,6 +175,7 @@ exports.findUserByEmail = (req, res, next) => {
 }
 
 exports.checkEmail = (req, res, next) => {
+    console.log('identifier = ' + req.body.email)
     codeValidatorAdapter.updateOne({
         verificationType: 'email',
         identifier: req.body.email,
@@ -194,45 +195,48 @@ exports.checkEmail = (req, res, next) => {
 
 }
 
-// req : { body : { identifier, newPwd } }
+// req : { body : { email, newPwd } }
 exports.changePwd = (req, res, next) => {
     codeValidatorAdapter.findOne({
         verificationType: 'email',
         identifier: req.body.email
     })
     .then(found => {
+        console.log('found:')
+        console.log(found)
+
         // modifier pwd
         if(found.doc){
             // modification
             userAdapter.updateOne({
-                verificationType: 'email',
-                identifier: req.body.email
+                email: req.body.email
             },{
                 password: req.body.newPwd
             })
-
-            // supprimer de la baqse codeValidator
-            codeValidatorAdapter.deleteOne({
-                verificationType: 'email',
-                identifier: req.body.email
-            })
-            .catch(() => {
-                //TODO: admin notification
-                console.log('WARNING : Echec lors de la suppression de l\'utilisateur dans la table codeValidator')
-            })
-            res.status(200).json({
-                state: 'SUCCESS'
-            })
+            .then(() => {
+                // supprimer de la baqse codeValidator
+                codeValidatorAdapter.deleteOne({
+                    verificationType: 'email',
+                    identifier: req.body.email
+                })
+                .catch(() => {
+                    //TODO: admin notification
+                    console.log('WARNING : Echec lors de la suppression de l\'utilisateur dans la table codeValidator')
+                })
+                res.status(200).json({
+                    state: 'SUCCESS'
+                })
+            })   
         } else {
             // cas ou le mdp n'a pas ete trouve
             res.status(200).json({
                 state: 'ERROR'
             })
         }
-
-    })
+    })            
     .catch(error => {
         console.log(error)
         res.status(400).json({ error })
     })
 }
+    
