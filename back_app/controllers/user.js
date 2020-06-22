@@ -199,7 +199,8 @@ exports.checkEmail = (req, res, next) => {
 exports.changePwd = (req, res, next) => {
     codeValidatorAdapter.findOne({
         verificationType: 'email',
-        identifier: req.body.email
+        identifier: req.body.email,
+        checked: true
     })
     .then(found => {
         console.log('found:')

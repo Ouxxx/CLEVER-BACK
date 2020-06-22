@@ -27,7 +27,7 @@ exports.addOne = data => {
 
 exports.updateOne = (filter,data) => {
     return new Promise((resolve,reject) => {
-            CodeValidator.findOneAndUpdate(filter,data)
+        User.findOneAndUpdate(filter,data)
             .then(res => {
                 resolve({ state: 'SUCCESS', res: res });
             })
