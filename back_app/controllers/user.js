@@ -108,6 +108,7 @@ exports.signin = (req, res, next) => {
             .then(valid => {
                 if(valid){
                     res.status(200).json({
+                        state: 'SUCCESS',
                         userId: user.user.email,
                         token: jwt.sign(
                             { userId: user._id },
@@ -117,16 +118,16 @@ exports.signin = (req, res, next) => {
                     })  
                 } else {
                     console.log('Mot de passe incorrect !')
-                    res.status(401).json({ error: 'Mot de passe incorrect !' })
+                    res.status(401).json({ state: ERROR, error: 'Mot de passe incorrect !' })
                 }
                 
             })
-            .catch(error => res.status(500).json({ error }))
+            .catch(error => res.status(500).json({ state: ERROR, error }))
         } else {
-            res.status(401).json({ error: 'Utilisateur introuvable !' })
+            res.status(401).json({ state: ERROR, error: 'Utilisateur introuvable !' })
         }
     })
-    .catch(error => res.status(500).json({ error }))
+    .catch(error => res.status(500).json({ state: ERROR, error }))
 };
 
 
