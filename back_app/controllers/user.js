@@ -109,6 +109,7 @@ exports.signin = (req, res, next) => {
                 if(valid){
                     res.status(200).json({
                         state: 'SUCCESS',
+                        register: user.user.userId,
                         userId: user.user.email,
                         token: jwt.sign(
                             { userId: user._id },
@@ -127,7 +128,10 @@ exports.signin = (req, res, next) => {
             res.status(401).json({ state: ERROR, error: 'Utilisateur introuvable !' })
         }
     })
-    .catch(error => res.status(500).json({ state: ERROR, error }))
+    .catch(error => {
+        console.log(error)
+        res.status(500).json({ state: ERROR, error })
+    })
 };
 
 
