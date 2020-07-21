@@ -33,7 +33,9 @@ exports.saveForm = (req, res, next) => {
                 password: hash,
                 phone: req.body.phone,
                 phoneCode: phoneCode,
-                emailCode: emailCode
+                emailCode: emailCode,
+                gender: req.body.gender,
+                birthday: req.body.birthday
             })
             .then(success => {
                 console.log('phoneCode: ' + phoneCode);
@@ -56,11 +58,14 @@ exports.signup = (req, res, next) => {
             const userId = generateCode(5);
 
             // sauvegarde du nouvel utilisateur dans la table definitive
+            console.log(valid)
             userAdapter.addOne({
                 userId: userId,
                 email: valid.user.email,
                 password: valid.user.password,
-                phone: valid.user.phone
+                phone: valid.user.phone,
+                gender: valid.user.gender,
+                birthday: valid.user.birthday
             })
             .then( (add_result) => {
                 // supprimer l'utilisateur de la table de transition
